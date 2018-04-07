@@ -15,14 +15,38 @@ Including another URLconf
 """
 # from django.contrib import admin
 from django.urls import path
-from django.conf.urls import url
+from django.conf.urls import url, include
 
 import xadmin
 from MxShop.settings import MEDIA_ROOT
 from django.views.static import serve
+from rest_framework.documentation import include_docs_urls
+
+# from goods.views_base import GoodsListView
+# from goods.views import GoodsListView
+from goods.views import GoodsListViewset
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+
+# 配置goods的url
+router.register(r'goods', GoodsListViewset)
+
+# goods_list = GoodsListViewset.as_view({
+#     'get': 'list',
+# })
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     url(r'xadmin/', xadmin.site.urls),
-    url(r'media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT})
+    url(r'media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
+
+    # 商品列表页
+    # url(r'goods/$', GoodsListView.as_view(), name='goods-list'),
+    # url(r'goods/$', GoodsListView.as_view(), name='goods-list'),
+    # url(r'goods/$', goods_list, name='goods-list'),
+    url(r'^', include(router.urls)),
+
+    # django rest 的url安装
+    url(r'docs/', include_docs_urls(title="慕学生鲜")),  # 生成文档
+    url(r'^api-auth/', include('rest_framework.urls')),
 ]
