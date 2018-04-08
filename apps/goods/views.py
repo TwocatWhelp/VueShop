@@ -1,5 +1,5 @@
 from goods.filters import ProductFilter
-from .serializers import GoodsSerializer
+from .serializers import GoodsSerializer, CategorySerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import mixins
@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework import filters
 
-from .models import Goods
+from .models import Goods, GoodsCategory
 
 # Create your views here.
 
@@ -62,15 +62,12 @@ class GoodsListViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     pagination_class = GoodsPagination
 
     # 过滤功能
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,filters.OrderingFilter,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
     # filter_fields = ('name', 'shop_price')
-
     # 自定义过滤，可以从name, desc中过滤，甚至可以模糊搜索
     filter_class = ProductFilter
-
     # 搜索功能是最好的模糊搜索
     search_fields = ('name', 'goods_brief', 'goods_desc')
-
     # 排序
     ordering_fields = ('add_time',)
 
@@ -81,5 +78,15 @@ class GoodsListViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     #     if price_min:
     #         queryset = queryset.objects.filter(shop_price__gt=int(price_min))
     #     return queryset
+
+
+class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    List:
+         商品分类列表数据
+    """
+    queryset = GoodsCategory.objects.all()
+    serializer_class = CategorySerializer
+
 
 
